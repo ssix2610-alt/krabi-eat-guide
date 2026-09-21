@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRABI EAT GUIDE - แหล่งรวมร้านอาหารยอดนิยมในจังหวัดกระบี่</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-hover: #0d655e;
+            --secondary: #0e7490;
+            --accent: #14b8a6;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0; color: var(--text); background-color: var(--bg); line-height: 1.6;
+        }
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #ffffff; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .brand { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .nav-actions { display: flex; gap: 14px; align-items: center; }
+        .btn {
+            padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none;
+            transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+        }
+        .btn-outline { background: transparent; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.7); }
+        .btn-outline:hover { background: rgba(255, 255, 255, 0.15); border-color: #ffffff; }
+        .btn-primary { background-color: var(--accent); color: #ffffff; }
+        .btn-primary:hover { background-color: #0d9488; }
+        .user-badge {
+            display: none; align-items: center; gap: 8px; background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; font-weight: 600;
+        }
+
+        .nav-tabs { display: flex; gap: 15px; margin-left: 20px; flex-wrap: wrap; }
+        .nav-tab-item { color: rgba(255,255,255,0.8); cursor: pointer; font-weight: 600; font-size: 14.5px; }
+        .nav-tab-item.active, .nav-tab-item:hover { color: #fff; border-bottom: 2px solid #fff; padding-bottom: 2px; }
+
+        .hero-section {
+            background: linear-gradient(rgba(15, 118, 110, 0.85), rgba(14, 116, 144, 0.85)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+            color: #ffffff; text-align: center; padding: 60px 20px; margin-bottom: 30px;
+        }
+        .hero-title { font-size: 36px; font-weight: 800; margin-bottom: 10px; }
+        .hero-subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 24px; }
+        
+        .search-wrapper {
+            max-width: 600px; margin: 0 auto; background: #fff; padding: 8px; border-radius: 50px;
+            display: flex; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .search-input-main {
+            flex: 1; border: none; padding: 12px 20px; font-size: 16px; outline: none; border-radius: 50px; color: var(--text);
+        }
+        .search-btn {
+            background: var(--primary); color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 600; cursor: pointer;
+        }
+
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 0 20px 50px 20px; }
+        
+        .filter-section { background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .filter-group-title { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .filter-row:last-child { margin-bottom: 0; }
+        
+        .filter-chip {
+            background: var(--bg); border: 1px solid var(--border); padding: 6px 16px; border-radius: 20px;
+            font-size: 13.5px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+        }
+        .filter-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .restaurant-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px;
+        }
+        .restaurant-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; position: relative;
+        }
+        .restaurant-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        
+        .card-header-img { height: 180px; position: relative; }
+        .card-header-img img { width: 100%; height: 100%; object-fit: cover; }
+        .rating-badge {
+            position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            color: #fbbf24; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 4px;
+        }
+        .fav-btn {
+            position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); border: none; width: 34px; height: 34px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #cbd5e1; font-size: 16px; transition: 0.2s;
+        }
+        .fav-btn.active { color: var(--danger); background: #fff; }
+
+        .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; cursor: pointer; }
+        .card-title:hover { color: var(--primary); }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; color: var(--text-muted); margin-bottom: 12px; }
+        
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: 500; }
+        .badge-thai { background-color: #fef3c7; color: #92400e; }
+        .badge-seafood { background-color: #e0f2fe; color: #075985; }
+        .badge-cafe { background-color: #fce7f3; color: #9d174d; }
+        .badge-indian { background-color: #ffedd5; color: #9a3412; }
+        
+        .card-menus { font-size: 13px; color: var(--text-muted); background: var(--bg); padding: 8px 12px; border-radius: 8px; margin-bottom: 14px; }
+        .card-actions { display: flex; gap: 8px; border-top: 1px solid var(--border); padding-top: 14px; align-items: center; justify-content: space-between; }
+        
+        .action-link {
+            padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+        }
+        .btn-call { background-color: #f1f5f9; color: var(--primary); border: 1px solid var(--border); }
+        .btn-gps { background-color: #0284c7; color: #ffffff; }
+        .btn-reserve { background-color: var(--accent); color: #ffffff; }
+
+        /* Coupon Card Styles */
+        .coupon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .coupon-card { background: #fff; border: 1px dashed var(--accent); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); position: relative; }
+        .coupon-title { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+        .coupon-discount { font-size: 20px; font-weight: 800; color: var(--warning); margin-bottom: 10px; }
+        .coupon-code { background: var(--bg); padding: 6px 12px; border-radius: 6px; font-family: monospace; font-weight: bold; display: inline-block; margin-bottom: 12px; border: 1px solid var(--border); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-card {
+            background: #ffffff; width: 100%; max-width: 500px; border-radius: 16px; padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 85vh; overflow-y: auto;
+        }
+        .modal-close { position: absolute; top: 15px; right: 18px; background: transparent; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; }
+        .modal-title { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 15px; }
+        
+        .review-box { background: var(--bg); padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 13.5px; }
+        .review-author { font-weight: 600; color: var(--primary); display: flex; justify-content: space-between; }
+
+        .reservation-card-item { background: var(--bg); border: 1px solid var(--border); padding: 14px; border-radius: 10px; margin-bottom: 12px; }
+        .status-badge { background: #d1fae5; color: #065f46; padding: 3px 8px; border-radius: 12px; font-size: 11.5px; font-weight: 600; display: inline-block; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 6px; color: #334155; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; }
+        .form-submit { width: 100%; padding: 11px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; }
+
+        .footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 30px 20px; font-size: 14px; margin-top: 60px; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div style="display: flex; align-items: center;">
+            <div class="brand" onclick="switchTab('explore')"><i class="fa-solid fa-utensils"></i> KRABI EAT GUIDE</div>
+            <div class="nav-tabs">
+                <span class="nav-tab-item active" id="tabExplore" onclick="switchTab('explore')">สำรวจร้านทั้งหมด</span>
+                <span class="nav-tab-item" id="tabFav" onclick="switchTab('fav')">ร้านโปรด ❤️</span>
+                <span class="nav-tab-item" id="tabCoupon" onclick="switchTab('coupon')">คูปองส่วนลด 🎟️</span>
+                <span class="nav-tab-item" id="tabRes" onclick="switchTab('res')">สถานะการจอง 📅</span>
+            </div>
+        </div>
+        <div class="nav-actions" id="guestNav">
+            <button class="btn btn-outline" onclick="openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</button>
+            <button class="btn btn-primary" onclick="openAuthModal('register')"><i class="fa-solid fa-user-plus"></i> สมัครสมาชิก</button>
+        </div>
+        <div class="user-badge" id="userNav">
+            <i class="fa-solid fa-circle-user fa-lg"></i>
+            <span id="userNameDisplay">ผู้ใช้งาน</span>
+            <button class="btn btn-outline" style="padding: 4px 10px; font-size: 12px; margin-left: 10px;" onclick="logout()">ออกจากระบบ</button>
+        </div>
+    </header>
+
+    <section class="hero-section" id="heroSection">
+        <h1 class="hero-title">ค้นหาร้านอร่อย ทั่วจังหวัดกระบี่</h1>
+        <p class="hero-subtitle">รวบรวมร้านอาหารไทย ซีฟู้ด คาเฟ่ พร้อมคูปองส่วนลดพิเศษ และระบบจองโต๊ะล่วงหน้า</p>
+        <div class="search-wrapper">
+            <input type="text" id="mainSearchInput" class="search-input-main" placeholder="ค้นหาชื่อร้านอาหาร, ประเภทอาหาร หรือย่าน..." onkeyup="filterRestaurants()">
+            <button class="search-btn"><i class="fa-solid fa-search"></i> ค้นหา</button>
+        </div>
+    </section>
+
+    <div class="main-container">
+        <!-- Advanced Filter Section (Category & Price Range) -->
+        <div class="filter-section" id="filterSection">
+            <div class="filter-group-title">ประเภทอาหาร</div>
+            <div class="filter-row" id="catFilterContainer">
+                <div class="filter-chip active" onclick="filterCategory('all', this)">ทั้งหมด</div>
+                <div class="filter-chip" onclick="filterCategory('อาหารไทย', this)">อาหารไทย</div>
+                <div class="filter-chip" onclick="filterCategory('ซีฟู้ด', this)">ซีฟู้ด</div>
+                <div class="filter-chip" onclick="filterCategory('คาเฟ่', this)">คาเฟ่</div>
+                <div class="filter-chip" onclick="filterCategory('อินเดีย', this)">อินเดีย</div>
+            </div>
+            
+            <div class="filter-group-title" style="margin-top: 14px;">ช่วงราคา / งบประมาณ</div>
+            <div class="filter-row" id="priceFilterContainer">
+                <div class="filter-chip active" onclick="filterPrice('all', this)">ทุกราคา</div>
+                <div class="filter-chip" onclick="filterPrice('฿', this)">฿ (ประหยัดต่ำกว่า 150 บาท)</div>
+                <div class="filter-chip" onclick="filterPrice('฿฿', this)">฿฿ (ปานกลาง 150 - 500 บาท)</div>
+                <div class="filter-chip" onclick="filterPrice('฿฿฿', this)">฿฿฿ (หรูหรา 500 บาทขึ้นไป)</div>
+            </div>
+        </div>
+
+        <h2 id="sectionHeader" style="margin-bottom: 20px; color: var(--primary); font-size: 20px;"></h2>
+        <div class="restaurant-grid" id="restaurantGrid"></div>
+    </div>
+
+    <footer class="footer">
+        KRABI EAT GUIDE Master Project &copy; 2026 | แพลตฟอร์มแนะนำร้านอาหารจังหวัดกระบี่ครบวงจร
+    </footer>
+
+    <!-- Detail & Reviews Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Reservation Modal (Includes Coupon Redeem Input) -->
+    <div class="modal-overlay" id="reservationModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeReservationModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title"><i class="fa-solid fa-calendar-check"></i> จองโต๊ะล่วงหน้า</div>
+            <div id="resRestaurantName" style="font-weight: 700; color: var(--primary); margin-bottom: 15px;"></div>
+            <form onsubmit="submitReservation(event)">
+                <div class="form-group"><label>วันที่ต้องการจอง</label><input type="date" id="resDate" class="form-control" required></div>
+                <div class="form-group"><label>เวลาที่ต้องการเข้าใช้บริการ</label><input type="time" id="resTime" class="form-control" required></div>
+                <div class="form-group"><label>จำนวนผู้ใช้บริการ (ท่าน)</label><input type="number" id="resGuests" class="form-control" min="1" max="50" value="2" required></div>
+                <div class="form-group"><label>เบอร์โทรศัพท์ติดต่อ</label><input type="tel" id="resPhone" class="form-control" placeholder="0812345678" required></div>
+                
+                <!-- Coupon Code Input Field -->
+                <div class="form-group">
+                    <label>รหัสโค้ดส่วนลด (ถ้ามี)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="resCouponCode" class="form-control" placeholder="เช่น RUEN100, KODAM15">
+                        <button type="button" class="btn btn-outline" style="background: var(--primary); color: #fff; white-space: nowrap;" onclick="applyCouponCode()">ตรวจสอบโค้ด</button>
+                    </div>
+                    <div id="couponStatusMessage" style="font-size: 12.5px; margin-top: 5px;"></div>
+                </div>
+
+                <div class="form-group"><label>หมายเหตุเพิ่มเติม</label><textarea id="resNote" class="form-control" rows="2" placeholder="เช่น ขอโต๊ะริมทะเล"></textarea></div>
+                <button type="submit" class="form-submit">ยืนยันการจองโต๊ะ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-card" style="max-width: 420px;">
+            <button class="modal-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div id="loginForm">
+                <div class="modal-title">เข้าสู่ระบบ</div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group"><label>อีเมล (Email)</label><input type="email" id="loginEmail" class="form-control" placeholder="example@email.com" required></div>
+                    <div class="form-group"><label>รหัสผ่าน (Password)</label><input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required></div>
+                    <button type="submit" class="form-submit">เข้าสู่ระบบ</button>
+                </form>
+                <div style="text-align:center; font-size:13px; margin-top:15px;">ยังไม่มีบัญชี? <a style="color:var(--primary); cursor:pointer; font-weight:600;" onclick="switchAuthForm('register')">สมัครสมาชิก</a></div>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+                <div class="modal-title">สมัครสมาชิก</div>
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="regName" class="form-control" placeholder="สมชาย ใจดี" required></div>
+                    <div class="form-group"><label>อีเมล (Email)</label><input type="email" id="regEmail" class="form-control" placeholder="example@email.com" required></div>
+                    <div class="form-group"><label>รหัสผ่าน (Password)</label><input type="password" id="regPassword" class="form-control" placeholder="••••••••" required></div>
+                    <button type="submit" class="form-submit">ยืนยันสมัครสมาชิก</button>
+                </form>
+                <div style="text-align:center; font-size:13px; margin-top:15px;">มีบัญชีอยู่แล้ว? <a style="color:var(--primary); cursor:pointer; font-weight:600;" onclick="switchAuthForm('login')">เข้าสู่ระบบ</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Beautiful Custom Notification Modal (Replaces alert()) -->
+    <div class="modal-overlay" id="customAlertModal">
+        <div class="modal-card" style="max-width: 380px; text-align: center; padding: 35px 25px;">
+            <div id="customAlertIcon" style="font-size: 48px; color: var(--success); margin-bottom: 15px;"><i class="fa-solid fa-circle-check"></i></div>
+            <div id="customAlertTitle" style="font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 10px;">สำเร็จ</div>
+            <div id="customAlertMessage" style="font-size: 14.5px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;">ข้อความแจ้งเตือน...</div>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;" onclick="closeCustomAlert()">ตกลง</button>
+        </div>
+    </div>
+
+    <script>
+        const restaurants = [
+            { id: 1, name: "ร้านอาหารเรือนไม้", cat: "อาหารไทย", priceRange: "฿฿", area: "ไสไทย", rating: 4.7, phone: "075631980", hours: "10:30 - 21:30 น.", menus: "แกงไตปลา, ใบเหลียงผัดไข่, หมูคั่วเกลือ", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80", reviews: [{user: "คุณแม่ชม", rating: 5, comment: "อาหารใต้รสชาติจัดจ้านถึงเครื่องมาก"}] },
+            { id: 2, name: "ร้านอาหารโกดำ คิทเช่น", cat: "อาหารไทย", priceRange: "฿", area: "อ่าวนาง", rating: 4.7, phone: "0835562556", hours: "11:00 - 21:00 น.", menus: "กุ้งผัดซอสมะขาม, แกงส้มปลาพง, หมูผัดกะปิ", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 3, name: "ร้านอาหารเกาะกลางซีฟู้ด", cat: "ซีฟู้ด", priceRange: "฿฿฿", area: "คลองประสงค์", rating: 4.8, phone: "0812716102", hours: "10:00 - 20:30 น.", menus: "ปูม้านึ่ง, ปลาเก๋านึ่งซีอิ๊ว, ยำไข่ดา", img: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 4, name: "ร้านอาหารกระชังขนาบน้ำวิวซีฟู้ด", cat: "ซีฟู้ด", priceRange: "฿฿", area: "คลองประสงค์", rating: 4.7, phone: "0859333971", hours: "09:30 - 21:00 น.", menus: "ปลาทอดกระเทียม, หอยนางรมสด, ต้มยำทะเล", img: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 5, name: "ร้านอาหารเรือนทิพย์ สาขา 1", cat: "อาหารไทย", priceRange: "฿", area: "เมืองกระบี่", rating: 4.4, phone: "075612519", hours: "10:00 - 22:00 น.", menus: "ทอดมันปลาอินทรีย์, แกงเขียวหวาน, ปูผัดผงกะหรี่", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 6, name: "ร้านอาหารล้านเล็กเล็ก", cat: "อาหารไทย", priceRange: "฿", area: "เมืองกระบี่", rating: 4.8, phone: "0819782522", hours: "11:00 - 20:00 น.", menus: "ข้าวคลุกกะปิ, น้ำพริกกุ้งสด, หมูสามชั้นทอดน้ำปลา", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 7, name: "ร้านอาหารโกตุง", cat: "อาหารไทย", priceRange: "฿฿", area: "เมืองกระบี่", rating: 4.5, phone: "075611522", hours: "11:00 - 21:30 น.", menus: "หมูฮ้อง, ปลาหมึกผัดไข่เค็ม, เกี้ยงปลาลวกจิ้ม", img: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 8, name: "Woods and Hoods Krabi", cat: "คาเฟ่", priceRange: "฿฿", area: "เมืองกระบี่", rating: 4.8, phone: "0935838588", hours: "08:30 - 17:30 น.", menus: "ครัวซองต์เนยสด, กาแฟดริป, บรันช์เซ็ต", img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 9, name: "ร้านอาหารหนำ", cat: "อาหารไทย", priceRange: "฿", area: "เมืองกระบี่", rating: 4.5, phone: "0818943621", hours: "10:00 - 16:00 น.", menus: "ขนมจีนน้ำยาปู, คั่วกลิ้งเนื้อ, แกงส้มใต้", img: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 10, name: "ร้านอาหารเดอะริเวอร์", cat: "อาหารไทย", priceRange: "฿฿฿", area: "เมืองกระบี่", rating: 4.6, phone: "075612128", hours: "11:00 - 22:00 น.", menus: "สเต็กเนื้อซอสพริกไทยดำ, ซี่โครงหมูอบบาร์บีคิว", img: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 11, name: "Family Thaifood & Seafood", cat: "ซีฟู้ด", priceRange: "฿฿", area: "อ่าวนาง", rating: 4.6, phone: "0892882200", hours: "11:00 - 22:30 น.", menus: "ต้มยำกุ้งน้ำข้น, ปลากะพงทอดน้ำปลา, กุ้งอบเกลือ", img: "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 12, name: "THAI ME UP PANG", cat: "อาหารไทย", priceRange: "฿฿", area: "อ่าวนาง", rating: 4.7, phone: "0831034444", hours: "12:00 - 23:00 น.", menus: "ผัดไทยกุ้งสด, แกงมัสมั่นไก่, ส้มตำปูม้า", img: "https://images.unsplash.com/photo-1515669097368-22e68427d265?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 13, name: "Zama Krabi Local Cafe", cat: "คาเฟ่", priceRange: "฿฿", area: "อ่าวนาง", rating: 4.8, phone: "0629636289", hours: "09:00 - 18:00 น.", menus: "ข้าวยำสมุนไพร, กาแฟมะพร้าวคั่ว, แกงส้มปลากะพง", img: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 14, name: "ระเบียงเล ซีฟู๊ด", cat: "ซีฟู้ด", priceRange: "฿฿฿", area: "ไสไทย", rating: 4.9, phone: "0898748364", hours: "10:30 - 21:30 น.", menus: "หมึกผัดไข่เค็ม, ปูม้าผัดผงกะหรี่, หอยแครงลวก", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80", reviews: [] },
+            { id: 15, name: "Royal Tandoor Krabi", cat: "อินเดีย", priceRange: "฿฿฿", area: "คลองม่วง", rating: 4.9, phone: "0980145618", hours: "11:30 - 22:30 น.", menus: "ไก่ทันดูรี, นานกระเทียม, แกงมาซาล่า", img: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=500&q=80", reviews: [] }
+        ];
+
+        const coupons = [
+            { id: 1, restaurant: "ร้านอาหารเรือนไม้", discount: "ส่วนลด 100 บาท", code: "RUEN100", desc: "เมื่อทานอาหารครบ 800 บาทขึ้นไป" },
+            { id: 2, restaurant: "ร้านอาหารโกดำ คิทเช่น", discount: "ส่วนลด 15%", code: "KODAM15", desc: "รับส่วนลดค่าอาหารทันที 15% ทุกเมนู" },
+            { id: 3, restaurant: "ร้านอาหารเกาะกลางซีฟู้ด", discount: "ฟรีเมนูยำไข่ดา", code: "SEAFOODFREE", desc: "เมื่อสั่งอาหารซีฟู้ดครบ 1,000 บาทขึ้นไป" },
+            { id: 4, restaurant: "Woods and Hoods Krabi", discount: "ซื้อเครื่องดื่มแก้วที่ 2 ลด 50%", code: "WOODS50", desc: "สำหรับเมนูกาแฟสดทุกประเภท" }
+        ];
+
+        let activeCategory = 'all';
+        let activePrice = 'all';
+        let currentTab = 'explore';
+        let favorites = JSON.parse(localStorage.getItem('krabi_favs')) || [];
+        let reservations = JSON.parse(localStorage.getItem('krabi_reservations')) || [];
+        let selectedRestaurantForRes = null;
+        let appliedCoupon = null;
+
+        // Custom Alert Function (Replaces standard alert())
+        function showCustomAlert(title, message, type = 'success') {
+            const modal = document.getElementById('customAlertModal');
+            const titleEl = document.getElementById('customAlertTitle');
+            const msgEl = document.getElementById('customAlertMessage');
+            const iconEl = document.getElementById('customAlertIcon');
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+
+            if(type === 'success') {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                iconEl.style.color = 'var(--success)';
+            } else if(type === 'error') {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+                iconEl.style.color = 'var(--danger)';
+            } else {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+                iconEl.style.color = 'var(--warning)';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').style.display = 'none';
+        }
+
+        function renderGrid(data) {
+            const grid = document.getElementById('restaurantGrid');
+            const header = document.getElementById('sectionHeader');
+            grid.innerHTML = '';
+
+            if(currentTab === 'fav') {
+                header.innerText = "❤️ ร้านโปรดที่บันทึกไว้ (" + data.length + " ร้าน)";
+            } else if(currentTab === 'res') {
+                header.innerText = "📅 ประวัติและสถานะการจองโต๊ะอาหารล่วงหน้า";
+            } else if(currentTab === 'coupon') {
+                header.innerText = "🎟️ คูปองส่วนลดและดีลพิเศษจากร้านอาหาร";
+                grid.className = "coupon-grid";
+                coupons.forEach(c => {
+                    const couponCard = document.createElement('div');
+                    couponCard.className = 'coupon-card';
+                    couponCard.innerHTML = `
+                        <div class="coupon-title">${c.restaurant}</div>
+                        <div class="coupon-discount">${c.discount}</div>
+                        <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:12px;">${c.desc}</p>
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">รหัสโค้ดส่วนลด:</div>
+                        <div class="coupon-code">${c.code}</div>
+                        <div><button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="claimCoupon('${c.code}')"><i class="fa-solid fa-ticket"></i> กดรับโค้ดส่วนลด</button></div>
+                    `;
+                    grid.appendChild(couponCard);
+                });
+                return;
+            } else {
+                header.innerText = "ร้านอาหารแนะนำทั้งหมด (" + data.length + " ร้าน)";
+            }
+
+            grid.className = "restaurant-grid";
+
+            if(currentTab === 'res') {
+                if(reservations.length === 0) {
+                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">ยังไม่มีประวัติการจองโต๊ะอาหาร</div>';
+                    return;
+                }
+                reservations.forEach(res => {
+                    const card = document.createElement('div');
+                    card.className = 'reservation-card-item';
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                            <strong style="font-size:16px; color:var(--primary);">${res.restaurantName}</strong>
+                            <span class="status-badge"><i class="fa-solid fa-circle-check"></i> ยืนยันการจองแล้ว</span>
+                        </div>
+                        <p style="margin:4px 0; font-size:13.5px;">📅 วันที่จอง: <strong>${res.date}</strong> | ⏰ เวลา: <strong>${res.time}</strong></p>
+                        <p style="margin:4px 0; font-size:13.5px;">👥 จำนวน: <strong>${res.guests} ท่าน</strong> | 📞 เบอร์ติดต่อ: ${res.phone}</p>
+                        ${res.coupon ? '<p style="margin:4px 0; font-size:13px; color:var(--success);">🎟️ โค้ดส่วนลดที่ใช้: <strong>' + res.coupon + '</strong></p>' : ''}
+                        ${res.note ? '<p style="margin:4px 0; font-size:13px; color:var(--text-muted);">หมายเหตุ: ' + res.note + '</p>' : ''}
+                    `;
+                    grid.appendChild(card);
+                });
+                return;
+            }
+
+            if(data.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">ไม่พบรายการร้านอาหารตามเงื่อนไขที่ค้นหา</div>';
+                return;
+            }
+
+            data.forEach(r => {
+                let badgeClass = 'badge-thai';
+                if(r.cat === 'ซีฟู้ด') badgeClass = 'badge-seafood';
+                if(r.cat === 'คาเฟ่') badgeClass = 'badge-cafe';
+                if(r.cat === 'อินเดีย') badgeClass = 'badge-indian';
+
+                const isFav = favorites.includes(r.id);
+                const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name + " " + r.area + " กระบี่")}`;
+
+                const card = document.createElement('div');
+                card.className = 'restaurant-card';
+                card.innerHTML = `
+                    <div class="card-header-img">
+                        <img src="${r.img}" alt="${r.name}">
+                        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav(${r.id}, event)"><i class="fa-solid fa-heart"></i></button>
+                        <div class="rating-badge"><i class="fa-solid fa-star"></i> ${r.rating}</div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <div class="card-title" onclick="openDetailModal(${r.id})">${r.name}</div>
+                            <div class="card-meta">
+                                <span class="badge ${badgeClass}">${r.cat}</span>
+                                <span style="font-weight:700; color:var(--primary);">งบประมาณ: ${r.priceRange}</span>
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-muted); margin-bottom:6px;"><i class="fa-solid fa-location-dot"></i> ${r.area}</div>
+                            <div class="card-menus"><i class="fa-solid fa-utensils"></i> เมนู: ${r.menus}</div>
+                            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> ${r.hours} (${r.reviews.length} รีวิว)</div>
+                        </div>
+                        <div class="card-actions">
+                            <a href="tel:${r.phone}" class="action-link btn-call"><i class="fa-solid fa-phone"></i> โทร</a>
+                            <a href="${mapUrl}" target="_blank" class="action-link btn-gps"><i class="fa-solid fa-map-location-dot"></i> GPS</a>
+                            <button onclick="openReservationModal(${r.id})" class="action-link btn-reserve"><i class="fa-solid fa-calendar-check"></i> จองโต๊ะ</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tabExplore').className = tab === 'explore' ? 'nav-tab-item active' : 'nav-tab-item';
+            document.getElementById('tabFav').className = tab === 'fav' ? 'nav-tab-item active' : 'nav-tab-item';
+            document.getElementById('tabCoupon').className = tab === 'coupon' ? 'nav-tab-item active' : 'nav-tab-item';
+            document.getElementById('tabRes').className = tab === 'res' ? 'nav-tab-item active' : 'nav-tab-item';
+            
+            const filterSec = document.getElementById('filterSection');
+            const heroSec = document.getElementById('heroSection');
+
+            if(tab === 'fav') {
+                filterSec.style.display = 'none';
+                heroSec.style.display = 'none';
+                const favRestaurants = restaurants.filter(r => favorites.includes(r.id));
+                renderGrid(favRestaurants);
+            } else if(tab === 'coupon') {
+                filterSec.style.display = 'none';
+                heroSec.style.display = 'none';
+                renderGrid([]);
+            } else if(tab === 'res') {
+                filterSec.style.display = 'none';
+                heroSec.style.display = 'none';
+                renderGrid([]);
+            } else {
+                filterSec.style.display = 'block';
+                heroSec.style.display = 'block';
+                filterRestaurants();
+            }
+        }
+
+        function toggleFav(id, event) {
+            event.stopPropagation();
+            const idx = favorites.indexOf(id);
+            if(idx > -1) {
+                favorites.splice(idx, 1);
+            } else {
+                favorites.push(id);
+            }
+            localStorage.setItem('krabi_favs', JSON.stringify(favorites));
+            
+            if(currentTab === 'fav') {
+                switchTab('fav');
+            } else {
+                filterRestaurants();
+            }
+        }
+
+        function filterRestaurants() {
+            const keyword = document.getElementById('mainSearchInput').value.toLowerCase();
+            const filtered = restaurants.filter(r => {
+                const matchKeyword = r.name.toLowerCase().includes(keyword) || r.area.toLowerCase().includes(keyword) || r.cat.toLowerCase().includes(keyword) || r.menus.toLowerCase().includes(keyword);
+                const matchCat = (activeCategory === 'all' || r.cat === activeCategory);
+                const matchPrice = (activePrice === 'all' || r.priceRange === activePrice);
+                return matchKeyword && matchCat && matchPrice;
+            });
+            renderGrid(filtered);
+        }
+
+        function filterCategory(cat, element) {
+            activeCategory = cat;
+            document.querySelectorAll('#catFilterContainer .filter-chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            filterRestaurants();
+        }
+
+        function filterPrice(price, element) {
+            activePrice = price;
+            document.querySelectorAll('#priceFilterContainer .filter-chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            filterRestaurants();
+        }
+
+        function claimCoupon(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showCustomAlert("คัดลอกโค้ดสำเร็จ! 🎉", `คัดลอกรหัส "${code}" เรียบร้อยแล้ว\nคุณสามารถนำไปกรอกตอนจองโต๊ะอาหารได้เลยครับ`);
+            }).catch(() => {
+                showCustomAlert("รหัสส่วนลด", `รหัสโค้ดของคุณคือ: ${code}`);
+            });
+        }
+
+        function openReservationModal(id) {
+            const user = localStorage.getItem('krabi_user');
+            if(!user) {
+                showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนทำการจองโต๊ะอาหาร", "warning");
+                openAuthModal('login');
+                return;
+            }
+
+            selectedRestaurantForRes = restaurants.find(item => item.id === id);
+            if(!selectedRestaurantForRes) return;
+
+            appliedCoupon = null;
+            document.getElementById('resCouponCode').value = '';
+            document.getElementById('couponStatusMessage').innerHTML = '';
+
+            document.getElementById('resRestaurantName').innerText = "ร้าน: " + selectedRestaurantForRes.name;
+            document.getElementById('reservationModal').style.display = 'flex';
+        }
+
+        function closeReservationModal() {
+            document.getElementById('reservationModal').style.display = 'none';
+        }
+
+        function applyCouponCode() {
+            const codeInput = document.getElementById('resCouponCode').value.trim().toUpperCase();
+            const msgEl = document.getElementById('couponStatusMessage');
+
+            if(!codeInput) {
+                msgEl.style.color = 'var(--danger)';
+                msgEl.innerText = '⚠️ กรุณากรอกรหัสโค้ดส่วนลดก่อนตรวจสอบ';
+                return;
+            }
+
+            const found = coupons.find(c => c.code === codeInput);
+            if(found) {
+                appliedCoupon = found.code;
+                msgEl.style.color = 'var(--success)';
+                msgEl.innerText = `✅ ใช้โค้ดส่วนลดสำเร็จ: ${found.discount} (${found.desc})`;
+            } else {
+                appliedCoupon = null;
+                msgEl.style.color = 'var(--danger)';
+                msgEl.innerText = '❌ รหัสโค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุ';
+            }
+        }
+
+        function submitReservation(e) {
+            e.preventDefault();
+            const date = document.getElementById('resDate').value;
+            const time = document.getElementById('resTime').value;
+            const guests = document.getElementById('resGuests').value;
+            const phone = document.getElementById('resPhone').value;
+            const note = document.getElementById('resNote').value;
+
+            const newReservation = {
+                restaurantName: selectedRestaurantForRes.name,
+                date: date,
+                time: time,
+                guests: guests,
+                phone: phone,
+                coupon: appliedCoupon,
+                note: note
+            };
+
+            reservations.push(newReservation);
+            localStorage.setItem('krabi_reservations', JSON.stringify(reservations));
+
+            closeReservationModal();
+            showCustomAlert("จองโต๊ะสำเร็จ! 🎉", `ร้าน: ${selectedRestaurantForRes.name}\nวันที่: ${date} เวลา: ${time}\n${appliedCoupon ? '🎟️ โค้ดส่วนลด: ' + appliedCoupon : ''}\nบันทึกสถานะการจองของคุณเรียบร้อยแล้ว`);
+        }
+
+        function openDetailModal(id) {
+            const r = restaurants.find(item => item.id === id);
+            if(!r) return;
+
+            const modalContent = document.getElementById('modalContent');
+            let reviewsHtml = '';
+            if(r.reviews.length === 0) {
+                reviewsHtml = '<p style="color:var(--text-muted); font-size:13.5px;">ยังไม่มีรีวิว ร่วมรีวิวร้านนี้คนแรกเลย!</p>';
+            } else {
+                r.reviews.forEach(rev => {
+                    reviewsHtml += `
+                        <div class="review-box">
+                            <div class="review-author"><span>${rev.user}</span> <span style="color:#fbbf24;"><i class="fa-solid fa-star"></i> ${rev.rating}</span></div>
+                            <p style="margin: 6px 0 0 0; color:#334155;">${rev.comment}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            modalContent.innerHTML = `
+                <div class="modal-title">${r.name}</div>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;"><i class="fa-solid fa-location-dot"></i> ${r.area} | ประเภท: ${r.cat} | งบประมาณ: ${r.priceRange}</p>
+                
+                <h3 style="font-size:15px; color:var(--primary); margin-bottom:10px;">รีวิวจากผู้ใช้งาน (${r.reviews.length})</h3>
+                <div style="max-height: 180px; overflow-y: auto; margin-bottom: 20px;">${reviewsHtml}</div>
+
+                <h3 style="font-size:15px; color:var(--primary); margin-bottom:10px;">เขียนรีวิวของคุณ</h3>
+                <form onsubmit="submitReview(${r.id}, event)">
+                    <div class="form-group">
+                        <label>ให้คะแนน (ดาว)</label>
+                        <select id="reviewRating" class="form-control">
+                            <option value="5">⭐⭐⭐⭐⭐ (5 ดาว - ดีมาก)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 ดาว - ดี)</option>
+                            <option value="3">⭐⭐⭐ (3 ดาว - ปานกลาง)</option>
+                            <option value="2">⭐⭐ (2 ดาว - พอใช้)</option>
+                            <option value="1">⭐ (1 ดาว - ควรปรับปรุง)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ความคิดเห็น / เมนูแนะนำ</label>
+                        <textarea id="reviewComment" class="form-control" rows="2" placeholder="เขียนรีวิวของคุณที่นี่..." required></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">ส่งรีวิว</button>
+                </form>
+            `;
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function submitReview(id, e) {
+            e.preventDefault();
+            const user = localStorage.getItem('krabi_user');
+            if(!user) {
+                showCustomAlert("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนเขียนรีวิว", "warning");
+                openAuthModal('login');
+                return;
+            }
+
+            const rating = parseInt(document.getElementById('reviewRating').value);
+            const comment = document.getElementById('reviewComment').value;
+
+            const r = restaurants.find(item => item.id === id);
+            r.reviews.push({ user: user, rating: rating, comment: comment });
+
+            let total = r.reviews.reduce((sum, item) => sum + item.rating, 0);
+            r.rating = (total / r.reviews.length).toFixed(1);
+
+            closeDetailModal();
+            showCustomAlert("สำเร็จ", "ส่งรีวิวสำเร็จ!");
+            filterRestaurants();
+        }
+
+        function openAuthModal(mode) {
+            document.getElementById('authModal').style.display = 'flex';
+            switchAuthForm(mode);
+        }
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+        function switchAuthForm(mode) {
+            if(mode === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            } else {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            }
+        }
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const name = email.split('@')[0];
+            localStorage.setItem('krabi_user', name);
+            updateNavUI();
+            closeAuthModal();
+            showCustomAlert("ยินดีต้อนรับ", "เข้าสู่ระบบสำเร็จ!");
+        }
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            localStorage.setItem('krabi_user', name);
+            updateNavUI();
+            closeAuthModal();
+            showCustomAlert("ยินดีต้อนรับ", "สมัครสมาชิกสำเร็จ!");
+        }
+        function logout() {
+            localStorage.removeItem('krabi_user');
+            updateNavUI();
+            showCustomAlert("ออกจากระบบ", "ออกจากระบบเรียบร้อยแล้ว", "info");
+        }
+        function updateNavUI() {
+            const user = localStorage.getItem('krabi_user');
+            const guestNav = document.getElementById('guestNav');
+            const userNav = document.getElementById('userNav');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+
+            if(user) {
+                guestNav.style.display = 'none';
+                userNav.style.display = 'flex';
+                userNameDisplay.innerText = user;
+            } else {
+                guestNav.style.display = 'flex';
+                userNav.style.display = 'none';
+            }
+        }
+
+        window.onload = function() {
+            filterRestaurants();
+            updateNavUI();
+        };
+    </script>
+</body>
+</html>
